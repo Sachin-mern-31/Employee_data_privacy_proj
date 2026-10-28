@@ -22,10 +22,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // CORS Configuration
-const rawClientUrls = process.env.CLIENT_URL || "http://localhost:5173";
-const allowedOrigins = rawClientUrls
-    .split(",")
-    .map((url) => url.trim().replace(/\/+$/, "")); // Strip trailing slashes
+const defaultOrigins = [
+    "http://localhost:5173",
+    "https://employee-data-privacy-proj.vercel.app"
+];
+const rawClientUrls = process.env.CLIENT_URL || "";
+const allowedOrigins = Array.from(
+    new Set([
+        ...defaultOrigins,
+        ...rawClientUrls
+            .split(",")
+            .map((url) => url.trim().replace(/\/+$/, ""))
+            .filter(Boolean)
+    ])
+);
 
 app.use(
     cors({
